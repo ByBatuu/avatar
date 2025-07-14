@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Avatar Upload and Crop</title>
+  <!-- Cropper.js CSS via unpkg -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/cropperjs@1.5.13/dist/cropper.min.css"
+  />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    .cropper-wrapper {
+      position: relative;
+      width: 300px;
+      height: 300px;
+      margin-top: 20px;
+      overflow: hidden;
+      background: #f0f0f0;
+    }
+    #avatar {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      cursor: grab;
+    }
+    #avatar:active {
+      cursor: grabbing;
+    }
+    #frame-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+    #zoom-slider {
+      margin-top: 10px;
+      width: 300px;
+    }
+    #crop-button {
+      margin-top: 15px;
+      padding: 8px 16px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h2>Upload and Position Your Avatar</h2>
+  <input type="file" id="file-input" accept="image/*" />
+
+  <div class="cropper-wrapper">
+    <img id="avatar" src="" alt="Avatar Preview" />
+    <img
+      id="frame-overlay"
+      crossOrigin="anonymous"
+      src="https://i.imgur.com/fpjTG8j.png"
+      alt="Frame Overlay"
+    />
+  </div>
+
+  <input
+    type="range"
+    id="zoom-slider"
+    min="0.1"
+    max="3"
+    step="0.01"
+    value="1"
+  />
+  <button id="crop-button">Download Avatar</button>
+
+  <!-- Cropper.js JS via unpkg -->
+  <script src="https://unpkg.com/cropperjs@1.5.13/dist/cropper.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const fileInput = document.getElementById('file-input');
+      const avatar = document.getElementById('avatar');
+      const frameOverlay = document.getElementById('frame-overlay');
+      const zoomSlider = document.getElementById('zoom-slider');
+      const cropButton = document.getElementById('crop-button');
+      let cropper;
+
+      fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const url = URL.createObjectURL(file);
+        avatar.src = url;
+
+        if (cropper) {
+          cropper.destroy();
+          cropper = null;
+        }
+
+        avatar.onload = () => {
+          cropper = new Cropper(avatar, {
+            viewMode: 0,         // allow free zooming
+            dragMode: 'move',    // enable moving
+            aspectRatio: 1,
+            autoCropArea: 1,
+            background: false,
+            modal: true,
+            guides: false,
+            highlight: false,
+            movable: true,
+            zoomable: true,
+            cropBoxMovable: false,
+            cropBoxResizable: false,
+            toggleDragModeOnDblclick: false,
+          });
+        };
+      });
+
+      zoomSlider.addEventListener('input', () => {
+        if (cropper) {
+          const zoomLevel = parseFloat(zoomSlider.value);
+          cropper.zoomTo(zoomLevel);
+        }
+      });
+
+      cropButton.addEventListener('click', () => {
+        if (!cropper) return;
+        const croppedCanvas = cropper.getCroppedCanvas({
+          width: 300,
+          height: 300,
+        });
+        const finalCanvas = document.createElement('canvas');
+        finalCanvas.width = 300;
+        finalCanvas.height = 300;
+        const ctx = finalCanvas.getContext('2d');
+
+        // Draw cropped image
+        ctx.drawImage(croppedCanvas, 0, 0);
+        // Draw overlay frame
+        ctx.drawImage(frameOverlay, 0, 0, 300, 300);
+
+        // Download
+        finalCanvas.toBlob((blob) => {
+          const link = document.createElement('a');
+          link.download = 'avatar.png';
+          link.href = URL.createObjectURL(blob);
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        });
+      });
+    });
+  </script>
+</body>
+</html>
