@@ -1,38 +1,219 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
   <meta charset="UTF-8" />
-  <title>Türkiye Avatar Sayfası</title>
-  <!-- Cropper.js CSS via unpkg -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/cropperjs@1.5.13/dist/cropper.min.css"
-  />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Avatar Oluşturucu</title>
+  <link rel="stylesheet" href="https://unpkg.com/cropperjs@1.5.13/dist/cropper.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
+    :root {
+      --primary: #e30a17;
+      --primary-dark: #b8000d;
+      --secondary: #ffffff;
+      --bg-dark: #1a1a2e;
+      --bg-card: #16213e;
+      --bg-input: #0f3460;
+      --text-light: #eaeaea;
+      --text-muted: #a0a0a0;
+      --success: #00c853;
+      --shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, var(--bg-dark) 0%, #0f0f1a 100%);
+      min-height: 100vh;
+      color: var(--text-light);
       padding: 20px;
     }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    /* Language Switcher */
+    .language-switcher {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+
+    .lang-btn {
+      background: var(--bg-card);
+      border: 2px solid transparent;
+      color: var(--text-light);
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+    }
+
+    .lang-btn:hover {
+      border-color: var(--text-muted);
+    }
+
+    .lang-btn.active {
+      border-color: var(--primary);
+      background: rgba(227, 10, 23, 0.2);
+    }
+
+    .lang-btn img {
+      width: 20px;
+      height: 14px;
+      object-fit: cover;
+      border-radius: 2px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      background: linear-gradient(90deg, var(--primary), #ff6b6b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    header h1 .flag-icon {
+      font-size: 2rem;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 1rem;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    .main-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+    }
+
+    @media (max-width: 768px) {
+      .main-content {
+        grid-template-columns: 1fr;
+      }
+      
+      header h1 {
+        font-size: 1.8rem;
+      }
+    }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: 20px;
+      padding: 25px;
+      box-shadow: var(--shadow);
+    }
+
+    .card-title {
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--secondary);
+    }
+
+    .card-title i {
+      color: var(--primary);
+    }
+
+    /* Upload Area */
+    .upload-area {
+      border: 3px dashed var(--bg-input);
+      border-radius: 15px;
+      padding: 40px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .upload-area:hover {
+      border-color: var(--primary);
+      background: rgba(227, 10, 23, 0.05);
+    }
+
+    .upload-area.dragover {
+      border-color: var(--success);
+      background: rgba(0, 200, 83, 0.1);
+    }
+
+    .upload-area i {
+      font-size: 3rem;
+      color: var(--primary);
+      margin-bottom: 15px;
+    }
+
+    .upload-area h3 {
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+    }
+
+    .upload-area p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .upload-area input[type="file"] {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    /* Cropper Wrapper */
+    .cropper-section {
+      margin-top: 20px;
+    }
+
     .cropper-wrapper {
       position: relative;
-      width: 300px;
-      height: 300px;
-      margin-top: 20px;
+      width: 100%;
+      aspect-ratio: 1;
+      max-width: 350px;
+      margin: 0 auto;
+      border-radius: 15px;
       overflow: hidden;
-      background: #f0f0f0;
+      background: #000;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
     }
+
     #avatar {
       display: block;
       max-width: 100%;
       height: auto;
-      cursor: grab;
     }
-    #avatar:active {
-      cursor: grabbing;
-    }
+
     #frame-overlay {
       position: absolute;
       top: 0;
@@ -40,118 +221,1057 @@
       width: 100%;
       height: 100%;
       pointer-events: none;
-      z-index: 1;
+      z-index: 10;
     }
-    #zoom-slider {
-      margin-top: 10px;
-      width: 300px;
+
+    .placeholder-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: var(--text-muted);
+      text-align: center;
+      pointer-events: none;
     }
-    #crop-button {
-      margin-top: 15px;
-      padding: 8px 16px;
-      font-size: 14px;
+
+    .placeholder-text i {
+      font-size: 3rem;
+      margin-bottom: 10px;
+      opacity: 0.5;
+    }
+
+    /* Controls */
+    .controls-section {
+      margin-top: 25px;
+    }
+
+    .control-group {
+      margin-bottom: 20px;
+    }
+
+    .control-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .control-label span {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .control-value {
+      background: var(--bg-input);
+      padding: 3px 10px;
+      border-radius: 5px;
+      font-size: 0.85rem;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 8px;
+      -webkit-appearance: none;
+      background: var(--bg-input);
+      border-radius: 10px;
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 22px;
+      height: 22px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      border-radius: 50%;
       cursor: pointer;
+      box-shadow: 0 2px 10px rgba(227, 10, 23, 0.4);
+      transition: transform 0.2s;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.1);
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .action-btn {
+      background: var(--bg-input);
+      border: none;
+      color: var(--text-light);
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.75rem;
+    }
+
+    .action-btn i {
+      font-size: 1.2rem;
+    }
+
+    .action-btn:hover {
+      background: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    .action-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Frame Selection */
+    .frame-selection {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .frame-option {
+      aspect-ratio: 1;
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+      border: 3px solid transparent;
+      transition: all 0.3s ease;
+      background: var(--bg-input);
+      position: relative;
+    }
+
+    .frame-option:hover {
+      border-color: var(--text-muted);
+    }
+
+    .frame-option.active {
+      border-color: var(--primary);
+      box-shadow: 0 0 15px rgba(227, 10, 23, 0.4);
+    }
+
+    .frame-option img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .frame-option .no-frame {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: var(--text-muted);
+      font-size: 0.7rem;
+    }
+
+    /* Download Button */
+    .download-btn {
+      width: 100%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 20px rgba(227, 10, 23, 0.3);
+    }
+
+    .download-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(227, 10, 23, 0.4);
+    }
+
+    .download-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Preview Section */
+    .preview-section {
+      text-align: center;
+    }
+
+    .preview-wrapper {
+      width: 200px;
+      height: 200px;
+      margin: 0 auto 20px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 4px solid var(--primary);
+      box-shadow: 0 5px 30px rgba(227, 10, 23, 0.3);
+    }
+
+    .preview-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .preview-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-input);
+      color: var(--text-muted);
+    }
+
+    /* Size Options */
+    .size-options {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .size-option {
+      background: var(--bg-input);
+      border: 2px solid transparent;
+      color: var(--text-light);
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.85rem;
+    }
+
+    .size-option:hover {
+      border-color: var(--text-muted);
+    }
+
+    .size-option.active {
+      border-color: var(--primary);
+      background: rgba(227, 10, 23, 0.2);
+    }
+
+    /* Format Options */
+    .format-options {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 25px;
+    }
+
+    .format-option {
+      background: var(--bg-input);
+      border: 2px solid transparent;
+      color: var(--text-light);
+      padding: 8px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.85rem;
+    }
+
+    .format-option:hover {
+      border-color: var(--text-muted);
+    }
+
+    .format-option.active {
+      border-color: var(--primary);
+      background: rgba(227, 10, 23, 0.2);
+    }
+
+    /* Instructions */
+    .instructions {
+      background: rgba(227, 10, 23, 0.1);
+      border-left: 4px solid var(--primary);
+      padding: 15px 20px;
+      border-radius: 0 10px 10px 0;
+      margin-top: 20px;
+    }
+
+    .instructions h4 {
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .instructions ol {
+      padding-left: 20px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.8;
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: var(--success);
+      color: white;
+      padding: 15px 25px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transform: translateX(200%);
+      transition: transform 0.3s ease;
+      z-index: 1000;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .toast.show {
+      transform: translateX(0);
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    footer a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    /* Cropper.js Overrides */
+    .cropper-view-box,
+    .cropper-face {
+      border-radius: 0;
+    }
+
+    .cropper-line,
+    .cropper-point {
+      display: none;
     }
   </style>
 </head>
 <body>
-  <h2>Çok basit, Seçeceğin avatarı koy, zoom-in , zoom-out yap alttan sonra mouse ile hareket ettirip tam hizala ve avatarı indir butonuna bas</h2>
-  <input type="file" id="file-input" accept="image/*" />
+  <div class="container">
+    <!-- Language Switcher -->
+    <div class="language-switcher">
+      <button class="lang-btn active" data-lang="tr">
+        <span>🇹🇷</span>
+        <span>Türkçe</span>
+      </button>
+      <button class="lang-btn" data-lang="en">
+        <span>🇬🇧</span>
+        <span>English</span>
+      </button>
+      <button class="lang-btn" data-lang="sr">
+        <span>🇷🇸</span>
+        <span>Српски</span>
+      </button>
+    </div>
 
-  <div class="cropper-wrapper">
-    <img id="avatar" src="" alt="Avatar Preview" />
-    <img
-      id="frame-overlay"
-      crossOrigin="anonymous"
-      src="https://i.imgur.com/fpjTG8j.png"
-      alt="Frame Overlay"
-    />
+    <header>
+      <h1>
+        <span class="flag-icon">🇹🇷</span>
+        <span data-i18n="title">Türkiye Avatar Oluşturucu</span>
+      </h1>
+      <p data-i18n="subtitle">Profil fotoğrafınıza Türk bayrağı çerçevesi ekleyin. Fotoğrafınızı yükleyin, ayarlayın ve indirin!</p>
+    </header>
+
+    <div class="main-content">
+      <!-- Left Column - Editor -->
+      <div class="card">
+        <h2 class="card-title"><i class="fas fa-image"></i> <span data-i18n="editorTitle">Fotoğraf Düzenleyici</span></h2>
+        
+        <div class="upload-area" id="upload-area">
+          <i class="fas fa-cloud-upload-alt"></i>
+          <h3 data-i18n="uploadTitle">Fotoğraf Yükle</h3>
+          <p data-i18n="uploadSubtitle">Sürükle bırak veya tıkla</p>
+          <input type="file" id="file-input" accept="image/*" />
+        </div>
+
+        <div class="cropper-section">
+          <div class="cropper-wrapper" id="cropper-wrapper">
+            <div class="placeholder-text" id="placeholder">
+              <i class="fas fa-user-circle"></i>
+              <p data-i18n="placeholder">Fotoğraf Bekleniyor</p>
+            </div>
+            <img id="avatar" src="" alt="Avatar Preview" style="display: none;" />
+            <img
+              id="frame-overlay"
+              crossOrigin="anonymous"
+              src="https://i.imgur.com/fpjTG8j.png"
+              alt="Frame Overlay"
+              style="display: none;"
+            />
+          </div>
+        </div>
+
+        <div class="controls-section">
+          <div class="control-group">
+            <div class="control-label">
+              <span><i class="fas fa-search-plus"></i> <span data-i18n="zoomLabel">Yakınlaştır</span></span>
+              <span class="control-value" id="zoom-value">1.0x</span>
+            </div>
+            <input type="range" id="zoom-slider" min="0.1" max="3" step="0.01" value="1" />
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span><i class="fas fa-sync-alt"></i> <span data-i18n="rotateLabel">Döndür</span></span>
+              <span class="control-value" id="rotate-value">0°</span>
+            </div>
+            <input type="range" id="rotate-slider" min="-180" max="180" step="1" value="0" />
+          </div>
+
+          <div class="action-buttons">
+            <button class="action-btn" id="rotate-left" title="Sola Döndür">
+              <i class="fas fa-undo"></i>
+              <span data-i18n="rotateLeft">Sola</span>
+            </button>
+            <button class="action-btn" id="rotate-right" title="Sağa Döndür">
+              <i class="fas fa-redo"></i>
+              <span data-i18n="rotateRight">Sağa</span>
+            </button>
+            <button class="action-btn" id="flip-h" title="Yatay Çevir">
+              <i class="fas fa-arrows-alt-h"></i>
+              <span data-i18n="flipH">Yatay</span>
+            </button>
+            <button class="action-btn" id="flip-v" title="Dikey Çevir">
+              <i class="fas fa-arrows-alt-v"></i>
+              <span data-i18n="flipV">Dikey</span>
+            </button>
+          </div>
+
+          <div class="action-buttons">
+            <button class="action-btn" id="zoom-in" title="Yakınlaştır">
+              <i class="fas fa-search-plus"></i>
+              <span data-i18n="zoomIn">Yakın</span>
+            </button>
+            <button class="action-btn" id="zoom-out" title="Uzaklaştır">
+              <i class="fas fa-search-minus"></i>
+              <span data-i18n="zoomOut">Uzak</span>
+            </button>
+            <button class="action-btn" id="center-btn" title="Ortala">
+              <i class="fas fa-compress-arrows-alt"></i>
+              <span data-i18n="center">Ortala</span>
+            </button>
+            <button class="action-btn" id="reset-btn" title="Sıfırla">
+              <i class="fas fa-undo-alt"></i>
+              <span data-i18n="reset">Sıfırla</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <div class="control-label">
+            <span><i class="fas fa-border-style"></i> <span data-i18n="frameLabel">Çerçeve Seç</span></span>
+          </div>
+          <div class="frame-selection">
+            <div class="frame-option" data-frame="none">
+              <div class="no-frame"><i class="fas fa-ban"></i></div>
+            </div>
+            <div class="frame-option active" data-frame="TR.png">
+              <img src="TR.png" alt="Frame 1" crossorigin="anonymous" />
+            </div>
+            <div class="frame-option" data-frame="CRO.png">
+              <img src="CRO.png" alt="Frame 2" crossorigin="anonymous" />
+            </div>
+            <div class="frame-option" data-frame="SRB.png">
+              <img src="SRB.png" alt="Frame 3" crossorigin="anonymous" />
+            </div>
+            <div class="frame-option" data-frame="IR.png">
+              <img src="IR.png" alt="Frame 4" crossorigin="anonymous" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column - Preview & Export -->
+      <div class="card">
+        <h2 class="card-title"><i class="fas fa-eye"></i> <span data-i18n="previewTitle">Önizleme & İndir</span></h2>
+        
+        <div class="preview-section">
+          <div class="preview-wrapper">
+            <div class="preview-placeholder" id="preview-placeholder">
+              <i class="fas fa-user-circle" style="font-size: 4rem;"></i>
+            </div>
+            <canvas id="preview-canvas" style="display: none; width: 100%; height: 100%;"></canvas>
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span><i class="fas fa-expand"></i> <span data-i18n="sizeLabel">Boyut Seç</span></span>
+            </div>
+            <div class="size-options">
+              <button class="size-option" data-size="128">128px</button>
+              <button class="size-option" data-size="200">200px</button>
+              <button class="size-option active" data-size="300">300px</button>
+              <button class="size-option" data-size="512">512px</button>
+              <button class="size-option" data-size="1024">1024px</button>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span><i class="fas fa-file-image"></i> <span data-i18n="formatLabel">Format</span></span>
+            </div>
+            <div class="format-options">
+              <button class="format-option active" data-format="png">PNG</button>
+              <button class="format-option" data-format="jpeg">JPEG</button>
+              <button class="format-option" data-format="webp">WebP</button>
+            </div>
+          </div>
+
+          <button class="download-btn" id="download-btn" disabled>
+            <i class="fas fa-download"></i>
+            <span data-i18n="downloadBtn">Avatar İndir</span>
+          </button>
+        </div>
+
+        <div class="instructions">
+          <h4><i class="fas fa-info-circle"></i> <span data-i18n="instructionsTitle">Nasıl Kullanılır?</span></h4>
+          <ol>
+            <li data-i18n="step1">Fotoğrafınızı sürükleyip bırakın veya tıklayarak seçin</li>
+            <li data-i18n="step2">Kaydırıcıları kullanarak yakınlaştırın ve döndürün</li>
+            <li data-i18n="step3">Fotoğrafı sürükleyerek konumlandırın</li>
+            <li data-i18n="step4">İstediğiniz çerçeveyi seçin</li>
+            <li data-i18n="step5">Boyut ve format seçin</li>
+            <li data-i18n="step6">"Avatar İndir" butonuna tıklayın</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <p><span data-i18n="footer">🇹🇷 Türkiye ile gurur duyarak yapıldı</span> | <a href="#" data-i18n="feedback">Geri Bildirim</a></p>
+    </footer>
   </div>
 
-  <input
-    type="range"
-    id="zoom-slider"
-    min="0.1"
-    max="3"
-    step="0.01"
-    value="1"
-  />
-  <button id="crop-button">Avatar İndir</button>
+  <div class="toast" id="toast">
+    <i class="fas fa-check-circle"></i>
+    <span id="toast-message">Avatar başarıyla indirildi!</span>
+  </div>
 
-  <!-- Cropper.js JS via unpkg -->
   <script src="https://unpkg.com/cropperjs@1.5.13/dist/cropper.min.js"></script>
   <script>
+    // Translations
+    const translations = {
+      tr: {
+        title: "Türkiye Avatar Oluşturucu",
+        subtitle: "Profil fotoğrafınıza Türk bayrağı çerçevesi ekleyin. Fotoğrafınızı yükleyin, ayarlayın ve indirin!",
+        editorTitle: "Fotoğraf Düzenleyici",
+        uploadTitle: "Fotoğraf Yükle",
+        uploadSubtitle: "Sürükle bırak veya tıkla",
+        placeholder: "Fotoğraf Bekleniyor",
+        zoomLabel: "Yakınlaştır",
+        rotateLabel: "Döndür",
+        rotateLeft: "Sola",
+        rotateRight: "Sağa",
+        flipH: "Yatay",
+        flipV: "Dikey",
+        zoomIn: "Yakın",
+        zoomOut: "Uzak",
+        center: "Ortala",
+        reset: "Sıfırla",
+        frameLabel: "Çerçeve Seç",
+        previewTitle: "Önizleme & İndir",
+        sizeLabel: "Boyut Seç",
+        formatLabel: "Format",
+        downloadBtn: "Avatar İndir",
+        instructionsTitle: "Nasıl Kullanılır?",
+        step1: "Fotoğrafınızı sürükleyip bırakın veya tıklayarak seçin",
+        step2: "Kaydırıcıları kullanarak yakınlaştırın ve döndürün",
+        step3: "Fotoğrafı sürükleyerek konumlandırın",
+        step4: "İstediğiniz çerçeveyi seçin",
+        step5: "Boyut ve format seçin",
+        step6: '"Avatar İndir" butonuna tıklayın',
+        footer: "🇹🇷 Türkiye ile gurur duyarak yapıldı",
+        feedback: "Geri Bildirim",
+        toastSuccess: "Avatar başarıyla indirildi!",
+        pageTitle: "Türkiye Avatar Oluşturucu"
+      },
+      en: {
+        title: "Türkiye Avatar Creator",
+        subtitle: "Add a Turkish flag frame to your profile photo. Upload your photo, adjust it, and download!",
+        editorTitle: "Photo Editor",
+        uploadTitle: "Upload Photo",
+        uploadSubtitle: "Drag & drop or click",
+        placeholder: "Waiting for Photo",
+        zoomLabel: "Zoom",
+        rotateLabel: "Rotate",
+        rotateLeft: "Left",
+        rotateRight: "Right",
+        flipH: "Flip H",
+        flipV: "Flip V",
+        zoomIn: "Zoom In",
+        zoomOut: "Zoom Out",
+        center: "Center",
+        reset: "Reset",
+        frameLabel: "Select Frame",
+        previewTitle: "Preview & Download",
+        sizeLabel: "Select Size",
+        formatLabel: "Format",
+        downloadBtn: "Download Avatar",
+        instructionsTitle: "How to Use?",
+        step1: "Drag and drop your photo or click to select",
+        step2: "Use sliders to zoom and rotate",
+        step3: "Drag the photo to position it",
+        step4: "Select your desired frame",
+        step5: "Choose size and format",
+        step6: 'Click the "Download Avatar" button',
+        footer: "🇹🇷 Made with pride for Türkiye",
+        feedback: "Feedback",
+        toastSuccess: "Avatar downloaded successfully!",
+        pageTitle: "Türkiye Avatar Creator"
+      },
+      sr: {
+        title: "Türkiye Kreator Avatara",
+        subtitle: "Dodajte okvir turske zastave na vašu profilnu fotografiju. Otpremite fotografiju, podesite je i preuzmite!",
+        editorTitle: "Uređivač Fotografija",
+        uploadTitle: "Otpremi Fotografiju",
+        uploadSubtitle: "Prevuci i pusti ili klikni",
+        placeholder: "Čeka se Fotografija",
+        zoomLabel: "Zumiraj",
+        rotateLabel: "Rotiraj",
+        rotateLeft: "Levo",
+        rotateRight: "Desno",
+        flipH: "Horiz.",
+        flipV: "Vertik.",
+        zoomIn: "Uvećaj",
+        zoomOut: "Umanji",
+        center: "Centriraj",
+        reset: "Resetuj",
+        frameLabel: "Izaberi Okvir",
+        previewTitle: "Pregled i Preuzimanje",
+        sizeLabel: "Izaberi Veličinu",
+        formatLabel: "Format",
+        downloadBtn: "Preuzmi Avatar",
+        instructionsTitle: "Kako Koristiti?",
+        step1: "Prevucite i pustite fotografiju ili kliknite da izaberete",
+        step2: "Koristite klizače za zumiranje i rotaciju",
+        step3: "Prevucite fotografiju da je pozicionirate",
+        step4: "Izaberite željeni okvir",
+        step5: "Izaberite veličinu i format",
+        step6: 'Kliknite na dugme "Preuzmi Avatar"',
+        footer: "🇹🇷 Napravljeno sa ponosom za Türkiye",
+        feedback: "Povratne Informacije",
+        toastSuccess: "Avatar uspešno preuzet!",
+        pageTitle: "Türkiye Kreator Avatara"
+      }
+    };
+
+    let currentLang = 'tr';
+
+    // Language switching function
+    function setLanguage(lang) {
+      currentLang = lang;
+      const t = translations[lang];
+      
+      // Update all elements with data-i18n attribute
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (t[key]) {
+          el.textContent = t[key];
+        }
+      });
+      
+      // Update page title
+      document.title = t.pageTitle;
+      
+      // Update html lang attribute
+      document.documentElement.lang = lang;
+      
+      // Update language button states
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.lang === lang) {
+          btn.classList.add('active');
+        }
+      });
+      
+      // Store preference
+      localStorage.setItem('avatarCreatorLang', lang);
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
+      // Language switcher
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          setLanguage(btn.dataset.lang);
+        });
+      });
+      
+      // Load saved language preference
+      const savedLang = localStorage.getItem('avatarCreatorLang');
+      if (savedLang && translations[savedLang]) {
+        setLanguage(savedLang);
+      }
+
+      // Elements
       const fileInput = document.getElementById('file-input');
+      const uploadArea = document.getElementById('upload-area');
       const avatar = document.getElementById('avatar');
       const frameOverlay = document.getElementById('frame-overlay');
+      const placeholder = document.getElementById('placeholder');
       const zoomSlider = document.getElementById('zoom-slider');
-      const cropButton = document.getElementById('crop-button');
-      let cropper;
+      const rotateSlider = document.getElementById('rotate-slider');
+      const zoomValue = document.getElementById('zoom-value');
+      const rotateValue = document.getElementById('rotate-value');
+      const downloadBtn = document.getElementById('download-btn');
+      const previewCanvas = document.getElementById('preview-canvas');
+      const previewPlaceholder = document.getElementById('preview-placeholder');
+      const toast = document.getElementById('toast');
+      const toastMessage = document.getElementById('toast-message');
 
+      let cropper = null;
+      let currentFrame = 'https://i.imgur.com/fpjTG8j.png';
+      let exportSize = 300;
+      let exportFormat = 'png';
+      let scaleX = 1;
+      let scaleY = 1;
+
+      // Drag and drop
+      uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+      });
+
+      uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('dragover');
+      });
+
+      uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith('image/')) {
+          handleFile(file);
+        }
+      });
+
+      // File input change
       fileInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
-        if (!file) return;
+        if (file) handleFile(file);
+      });
+
+      function handleFile(file) {
         const url = URL.createObjectURL(file);
         avatar.src = url;
-
+        
         if (cropper) {
           cropper.destroy();
           cropper = null;
         }
 
+        avatar.style.display = 'block';
+        placeholder.style.display = 'none';
+        
+        if (currentFrame !== 'none') {
+          frameOverlay.src = currentFrame;
+          frameOverlay.style.display = 'block';
+        }
+
         avatar.onload = () => {
           cropper = new Cropper(avatar, {
-            viewMode: 0,         // allow free zooming
-            dragMode: 'move',    // enable moving
+            viewMode: 1,
+            dragMode: 'move',
             aspectRatio: 1,
             autoCropArea: 1,
             background: false,
-            modal: true,
+            modal: false,
             guides: false,
             highlight: false,
+            center: true,
             movable: true,
             zoomable: true,
+            rotatable: true,
+            scalable: true,
             cropBoxMovable: false,
             cropBoxResizable: false,
             toggleDragModeOnDblclick: false,
+            ready() {
+              updatePreview();
+              downloadBtn.disabled = false;
+            },
+            crop() {
+              updatePreview();
+            },
+            zoom() {
+              updatePreview();
+            }
           });
+          
+          // Reset sliders
+          zoomSlider.value = 1;
+          rotateSlider.value = 0;
+          zoomValue.textContent = '1.0x';
+          rotateValue.textContent = '0°';
+          scaleX = 1;
+          scaleY = 1;
         };
-      });
+      }
 
+      // Zoom slider
       zoomSlider.addEventListener('input', () => {
         if (cropper) {
-          const zoomLevel = parseFloat(zoomSlider.value);
-          cropper.zoomTo(zoomLevel);
+          const level = parseFloat(zoomSlider.value);
+          cropper.zoomTo(level);
+          zoomValue.textContent = level.toFixed(1) + 'x';
         }
       });
 
-      cropButton.addEventListener('click', () => {
-        if (!cropper) return;
-        const croppedCanvas = cropper.getCroppedCanvas({
-          width: 300,
-          height: 300,
-        });
-        const finalCanvas = document.createElement('canvas');
-        finalCanvas.width = 300;
-        finalCanvas.height = 300;
-        const ctx = finalCanvas.getContext('2d');
+      // Rotate slider
+      rotateSlider.addEventListener('input', () => {
+        if (cropper) {
+          const angle = parseInt(rotateSlider.value);
+          cropper.rotateTo(angle);
+          rotateValue.textContent = angle + '°';
+        }
+      });
 
-        // Draw cropped image
-        ctx.drawImage(croppedCanvas, 0, 0);
-        // Draw overlay frame
-        ctx.drawImage(frameOverlay, 0, 0, 300, 300);
+      // Action buttons
+      document.getElementById('rotate-left').addEventListener('click', () => {
+        if (cropper) {
+          cropper.rotate(-90);
+          updateRotateSlider();
+        }
+      });
 
-        // Download
-        finalCanvas.toBlob((blob) => {
-          const link = document.createElement('a');
-          link.download = 'avatar.png';
-          link.href = URL.createObjectURL(blob);
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
+      document.getElementById('rotate-right').addEventListener('click', () => {
+        if (cropper) {
+          cropper.rotate(90);
+          updateRotateSlider();
+        }
+      });
+
+      document.getElementById('flip-h').addEventListener('click', () => {
+        if (cropper) {
+          scaleX = scaleX * -1;
+          cropper.scaleX(scaleX);
+          updatePreview();
+        }
+      });
+
+      document.getElementById('flip-v').addEventListener('click', () => {
+        if (cropper) {
+          scaleY = scaleY * -1;
+          cropper.scaleY(scaleY);
+          updatePreview();
+        }
+      });
+
+      document.getElementById('zoom-in').addEventListener('click', () => {
+        if (cropper) {
+          cropper.zoom(0.1);
+          zoomSlider.value = Math.min(3, parseFloat(zoomSlider.value) + 0.1);
+          zoomValue.textContent = parseFloat(zoomSlider.value).toFixed(1) + 'x';
+        }
+      });
+
+      document.getElementById('zoom-out').addEventListener('click', () => {
+        if (cropper) {
+          cropper.zoom(-0.1);
+          zoomSlider.value = Math.max(0.1, parseFloat(zoomSlider.value) - 0.1);
+          zoomValue.textContent = parseFloat(zoomSlider.value).toFixed(1) + 'x';
+        }
+      });
+
+      document.getElementById('center-btn').addEventListener('click', () => {
+        if (cropper) {
+          cropper.reset();
+          zoomSlider.value = 1;
+          rotateSlider.value = 0;
+          zoomValue.textContent = '1.0x';
+          rotateValue.textContent = '0°';
+          scaleX = 1;
+          scaleY = 1;
+        }
+      });
+
+      document.getElementById('reset-btn').addEventListener('click', () => {
+        if (cropper) {
+          cropper.reset();
+          zoomSlider.value = 1;
+          rotateSlider.value = 0;
+          zoomValue.textContent = '1.0x';
+          rotateValue.textContent = '0°';
+          scaleX = 1;
+          scaleY = 1;
+        }
+      });
+
+      function updateRotateSlider() {
+        if (cropper) {
+          const data = cropper.getData();
+          let angle = Math.round(data.rotate) % 360;
+          if (angle > 180) angle -= 360;
+          if (angle < -180) angle += 360;
+          rotateSlider.value = angle;
+          rotateValue.textContent = angle + '°';
+        }
+      }
+
+      // Frame selection
+      document.querySelectorAll('.frame-option').forEach(option => {
+        option.addEventListener('click', () => {
+          document.querySelectorAll('.frame-option').forEach(o => o.classList.remove('active'));
+          option.classList.add('active');
+          currentFrame = option.dataset.frame;
+          
+          if (currentFrame === 'none') {
+            frameOverlay.style.display = 'none';
+          } else {
+            frameOverlay.src = currentFrame;
+            frameOverlay.style.display = 'block';
+          }
+          updatePreview();
         });
       });
+
+      // Size selection
+      document.querySelectorAll('.size-option').forEach(option => {
+        option.addEventListener('click', () => {
+          document.querySelectorAll('.size-option').forEach(o => o.classList.remove('active'));
+          option.classList.add('active');
+          exportSize = parseInt(option.dataset.size);
+          updatePreview();
+        });
+      });
+
+      // Format selection
+      document.querySelectorAll('.format-option').forEach(option => {
+        option.addEventListener('click', () => {
+          document.querySelectorAll('.format-option').forEach(o => o.classList.remove('active'));
+          option.classList.add('active');
+          exportFormat = option.dataset.format;
+        });
+      });
+
+      // Update preview
+      function updatePreview() {
+        if (!cropper) return;
+        
+        const croppedCanvas = cropper.getCroppedCanvas({
+          width: exportSize,
+          height: exportSize,
+        });
+        
+        if (!croppedCanvas) return;
+        
+        previewCanvas.width = exportSize;
+        previewCanvas.height = exportSize;
+        const ctx = previewCanvas.getContext('2d');
+        
+        // Draw cropped image
+        ctx.drawImage(croppedCanvas, 0, 0);
+        
+        // Draw frame overlay if selected
+        if (currentFrame !== 'none') {
+          const frameImg = new Image();
+          frameImg.crossOrigin = 'anonymous';
+          frameImg.onload = () => {
+            ctx.drawImage(frameImg, 0, 0, exportSize, exportSize);
+            previewCanvas.style.display = 'block';
+            previewPlaceholder.style.display = 'none';
+          };
+          frameImg.src = currentFrame;
+        } else {
+          previewCanvas.style.display = 'block';
+          previewPlaceholder.style.display = 'none';
+        }
+      }
+
+      // Download
+      downloadBtn.addEventListener('click', () => {
+        if (!cropper) return;
+        
+        const croppedCanvas = cropper.getCroppedCanvas({
+          width: exportSize,
+          height: exportSize,
+        });
+        
+        const finalCanvas = document.createElement('canvas');
+        finalCanvas.width = exportSize;
+        finalCanvas.height = exportSize;
+        const ctx = finalCanvas.getContext('2d');
+        
+        // Draw cropped image
+        ctx.drawImage(croppedCanvas, 0, 0);
+        
+        // Function to download
+        const download = () => {
+          let mimeType = 'image/png';
+          let extension = 'png';
+          
+          if (exportFormat === 'jpeg') {
+            mimeType = 'image/jpeg';
+            extension = 'jpg';
+            // Fill white background for JPEG
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = exportSize;
+            tempCanvas.height = exportSize;
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCtx.fillStyle = '#ffffff';
+            tempCtx.fillRect(0, 0, exportSize, exportSize);
+            tempCtx.drawImage(finalCanvas, 0, 0);
+            finalCanvas.getContext('2d').drawImage(tempCanvas, 0, 0);
+          } else if (exportFormat === 'webp') {
+            mimeType = 'image/webp';
+            extension = 'webp';
+          }
+          
+          finalCanvas.toBlob((blob) => {
+            const link = document.createElement('a');
+            link.download = `turkiye-avatar-${exportSize}px.${extension}`;
+            link.href = URL.createObjectURL(blob);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showToast(translations[currentLang].toastSuccess);
+          }, mimeType, 0.95);
+        };
+        
+        // Draw frame overlay if selected
+        if (currentFrame !== 'none') {
+          const frameImg = new Image();
+          frameImg.crossOrigin = 'anonymous';
+          frameImg.onload = () => {
+            ctx.drawImage(frameImg, 0, 0, exportSize, exportSize);
+            download();
+          };
+          frameImg.onerror = () => {
+            console.error('Frame loading failed');
+            download();
+          };
+          frameImg.src = currentFrame;
+        } else {
+          download();
+        }
+      });
+
+      // Toast notification
+      function showToast(message) {
+        toastMessage.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => {
+          toast.classList.remove('show');
+        }, 3000);
+      }
     });
   </script>
 </body>
